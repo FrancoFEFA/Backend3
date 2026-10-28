@@ -4,7 +4,10 @@
   "description": "Materia Backend III",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:e2e": "jest tests/persistence.e2e.test.js --runInBand"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
