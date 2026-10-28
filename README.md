@@ -74,7 +74,31 @@ Ambos responden `{ "status": "success", "payload": [...] }` con los documentos p
 1. Inicia MongoDB y configura `MONGO_URL` en `.env`.
 2. Ejecuta `npm start`.
 3. Solicita `GET /api/mocks/mockingusers` y comprueba que `payload` tenga 50 elementos.
-4. Envía `POST /api/mocks/generateData` con cantidades de prueba.
-5. Consulta `/api/users` y `/api/pets` y verifica que estén disponibles los registros insertados.
+4. Envía `POST /api/mocks/generateData` con `{ "users": 50, "pets": 30 }`.
+5. Consulta `/api/users` y `/api/pets` y verifica que estén disponibles los 50 usuarios y las 30 mascotas.
 
 Las cantidades inválidas en `num` o el cuerpo de generación se rechazan con `400`. La inserción real requiere una base MongoDB accesible; no se incluye una base embebida.
+
+## Pruebas automatizadas
+
+El proyecto usa Jest y Supertest. Las pruebas unitarias y de endpoints no necesitan MongoDB:
+
+```bash
+npm test
+```
+
+Cubren los generadores de usuarios y mascotas y los endpoints `/api/mocks/mockingusers`, `/api/mocks/mockingpets` y `/api/mocks/generateData`, incluidos sus casos de validación y la respuesta `503` sin conexión.
+
+### Prueba de persistencia (E2E)
+
+La prueba `tests/persistence.e2e.test.js` inserta 50 usuarios y 30 mascotas y luego los consulta con los GET. Se ejecuta solo si existe `MONGO_URL_TEST`; en caso contrario se omite.
+
+Usa una base **descartable**: la prueba borra las colecciones `Users` y `Pets` de esa base antes y después de ejecutarse. Nunca apuntes `MONGO_URL_TEST` a la misma URI que `MONGO_URL`.
+
+```env
+MONGO_URL_TEST=mongodb://127.0.0.1:27017/backend_iii_test
+```
+
+```bash
+npm run test:e2e
+```
